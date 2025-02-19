@@ -1,0 +1,19 @@
+<!-- inheriting the main template -->
+{%extends 'main.html'%}
+
+<!-- putting the main content inside the block -->
+{%block content%}
+<h1>Home Template</h1>
+<div>
+  <div>
+    <!-- tags of django templating engine -->
+    {% for room in rooms %}
+    <div>
+      <!-- variables of django templating engine -->
+      <h4>{{room.id}}===={{room.name}}</h4>
+    </div>
+    <!-- we need to end the for loop while in tags of DTE -->
+    {% endfor %}
+  </div>
+</div>
+{%endblock content%}
