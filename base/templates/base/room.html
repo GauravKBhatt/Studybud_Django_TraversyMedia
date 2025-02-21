@@ -3,5 +3,7 @@
 
 <!-- putting the main content inside the block -->
 {%block content%}
-<h1>Room Template</h1>
+<!-- The view is passing the room as a conetxt and we are displaying the name of the room. -->
+<h1>{{room.name}}</h1>
+<h4>{{room.description}}</h4>
 {%endblock content%}

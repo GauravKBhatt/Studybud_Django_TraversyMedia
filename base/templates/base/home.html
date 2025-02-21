@@ -7,10 +7,19 @@
 <div>
   <div>
     <!-- tags of django templating engine -->
+     <a href="{% url 'create-room'%}">Create Room</a>
     {% for room in rooms %}
     <div>
-      <!-- variables of django templating engine -->
-      <h4>{{room.id}}===={{room.name}}</h4>
+      <a href="{%url 'update-room' room.id%}">Edit</a>
+      <a href="{%url 'delete-room' room.id%}">Delete</a>
+      <!-- variables of django templating engine and making the room names clickable links that will route us to the different rooms. -->
+      <!-- <h4>{{room.id}}====<a href="/room/{{room.id}}">{{room.name}}</a></h4> -->
+      
+      <!-- Now, we will use dynamic routing unlike the static routing that was done in the comments above. Unless and until the 'Room' name does not change in url.py, we do not need to specify the path -->
+      <small>@{{room.host.username}}</small>
+      <h4>{{room.id}}====<a href="{%url 'Room' room.id%}">{{room.name}}</a></h4>
+      <small>{{room.topic.name}}</small>
+      <hr>
     </div>
     <!-- we need to end the for loop while in tags of DTE -->
     {% endfor %}
