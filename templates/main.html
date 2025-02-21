@@ -7,7 +7,15 @@
   </head>
   <body>
     <!-- This is used so that navbar can be on the top of all the templates who extend(inherit) the main  template -->
-    {%include 'navbar.html'%} {%block content%}
+    {%include 'navbar.html'%} 
+    {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {%block content%}
     <!-- The content of the inherited classes goes inside this class. -->
     {%endblock%}
   </body>

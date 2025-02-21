@@ -1,8 +1,11 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
+from django.contrib.auth.models import User
 # this helps us add AND OR to the queries
 from .models import Room,Topic
 from django.db.models import Q
+from django.contrib import messages 
+from django.contrib.auth import authenticate, login,logout
 
 from .forms import RoomForm
 #using the HttpResponse method.
@@ -17,6 +20,28 @@ from .forms import RoomForm
 #     {'id':2,'name':"Django"},
 #     {'id':3,'name':"javascript"},
 # ]
+
+def loginPage(request):
+    if request.method =='POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        try:
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('Home')
+            else:
+                messages.error(request, 'Invalid User')
+        except:
+            messages.error(request, 'The password is wrong')
+    context={}
+    return render(request,'base/login_register.html',context)
+
+# figuring out logout
+def logoutPage(request):
+    logout(request)
+    return redirect('Home')
 
 # using the render method.
 def home(request):
