@@ -1,6 +1,9 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from .models import Room
+# this helps us add AND OR to the queries
+from .models import Room,Topic
+from django.db.models import Q
+
 from .forms import RoomForm
 #using the HttpResponse method.
 # def home(request):
@@ -17,10 +20,19 @@ from .forms import RoomForm
 
 # using the render method.
 def home(request):
+    if request.GET.get('q')!=None:
+        q=request.GET.get('q')
+    else:
+        q=''
     # We are no more using the data specified in this file. We now use the data in the database through queries.
-    rooms = Room.objects.all()
-    # creating a dictionary out of the list room
-    context={'rooms':rooms}
+    # rooms = Room.objects.all() this is commented out because now we will query the room through filter method showing only those rooms as searched by the user.
+    topics = Topic.objects.all()
+    # topic is a different model thus, we need to specify the model name too, rest are the attributes of the room model.
+    rooms =Room.objects.filter (Q(topic__name__icontains=q) | Q(name__icontains='q') | Q(description__icontains='q'))
+    room_count=rooms.count() 
+    # creating a dictiory out of the list room
+    context={'rooms':rooms,'topics':topics,'room_count':room_count}
+
     return render(request,'base/home.html',context)
 # passing another pk parameter that was defined in the urls.py for dynamic routing. 
 def room(request,pk):

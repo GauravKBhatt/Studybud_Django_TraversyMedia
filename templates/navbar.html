@@ -1,2 +1,7 @@
 <a href="{%url 'Home'%}">Home</a>
 
+<form method="GET" action="{%url 'Home'%}">
+    <!-- here the words entered by the user will be sent to the view as parameter 'q' -->
+    <input type="text" name="q" placeholder="Search Rooms."/> 
+</form>
+

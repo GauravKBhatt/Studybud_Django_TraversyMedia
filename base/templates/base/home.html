@@ -3,11 +3,32 @@
 
 <!-- putting the main content inside the block -->
 {%block content%}
-<h1>Home Template</h1>
-<div>
+<style>
+  .home-container{
+    display:grid;
+    grid-template-columns: 1fr 3fr;
+  }
+</style>
+<div class="home-container">
+  <div>
+    <h3>Browse Topics</h3>
+    <hr>
+    <div>
+      <a href="{% url 'Home' %}">All</a>
+    </div>
+    <!-- now looping through all the topics to display them. -->
+    {% for topic in topics %}
+      <div>
+        <!-- ?q= is a query string used to pass data to the backend (e.g., filtering content based on topic.name). -->
+        <a href="{%url 'Home'%}?q={{topic.name}}">{{topic.name}}</a>
+      </div>
+    {% endfor %}
+  </div>
   <div>
     <!-- tags of django templating engine -->
-     <a href="{% url 'create-room'%}">Create Room</a>
+    <!-- To display how many rooms are avialable for particular search  -->
+    <h4>{{room_count}} rooms avialable</h4>
+    <a href="{% url 'create-room'%}">Create Room</a>
     {% for room in rooms %}
     <div>
       <a href="{%url 'update-room' room.id%}">Edit</a>
