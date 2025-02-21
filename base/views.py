@@ -25,16 +25,16 @@ def loginPage(request):
     if request.method =='POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
         try:
+            user = User.objects.get(username=username)
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('Home')
+                return redirect('home')
             else:
-                messages.error(request, 'Invalid User')
-        except:
-            messages.error(request, 'The password is wrong')
+                messages.error(request, 'The password does not match with the username.')
+        except User.DoesNotExist:
+            messages.error(request, 'The user does not exist.')
     context={}
     return render(request,'base/login_register.html',context)
 
