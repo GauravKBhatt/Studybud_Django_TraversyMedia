@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 # this helps us add AND OR to the queries
-from .models import Room,Topic
+from .models import Room,Topic,Message
 from django.db.models import Q
 from django.contrib import messages 
 from django.contrib.auth import authenticate, login,logout
@@ -88,11 +88,22 @@ def home(request):
 def room(request,pk):
     # query into the database gets the exact room we are looking for.
     room=Room.objects.get(id=pk)
+    # all the child components of the room.
+    room_messages=room.message_set.all()
+    participants=room.participants.all()
     # code to identify the room that correlates to the parameter pk. NOT NEEDED AFTER THE QUERY
     # for i in rooms:
     #     if i['id']==int(pk):
     #         room=i
-    context ={'room':room}
+    if request.method=='POST':
+        message=Message.objects.create(
+            user=request.user,
+            body=request.POST.get('body'),
+            room=room
+        )
+        room.participants.add(request.user)
+        return redirect('Room',pk=room.id)
+    context ={'room':room,'room_messages':room_messages,'participants':participants}
     # returning the room that matches with the parameter pk
     return render(request,'base/room.html',context)
 
@@ -129,7 +140,20 @@ def updateRoom(request,pk):
 @login_required(login_url='loginPage')
 def deleteRoom(request,pk):
     room=Room.objects.get(id=pk)
+    if request.user != room.host:
+        return HttpResponse("You are not the host of this room.Thus, you cannot delete it.")
     if request.method=='POST':
         room.delete()
         return redirect('Home')
     return render(request,'base/delete.html',{'obj':room})
+
+# logic to delete the message 
+@login_required(login_url='loginPage')
+def deleteMessage(request,pk):
+    message=Message.objects.get(id=pk)
+    if request.user != message.user:
+        return HttpResponse("You are not the owner of this message.Thus, you cannot edit it.")
+    if request.method=='POST':
+        message.delete()
+        return redirect('Home')
+    return render(request,'base/delete.html',{'obj':message})

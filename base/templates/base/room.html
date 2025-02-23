@@ -4,6 +4,46 @@
 <!-- putting the main content inside the block -->
 {%block content%}
 <!-- The view is passing the room as a conetxt and we are displaying the name of the room. -->
-<h1>{{room.name}}</h1>
-<h4>{{room.description}}</h4>
+<style>
+    .room-container {
+        display:grid;
+        grid-template-columns: 3fr 1fr;
+    }
+</style>
+<div class="room-container">
+    <div>
+        <h1>{{room.name}}</h1>
+        <h4>{{room.description}}</h4>
+        <div class="comment-wrapper">
+            <h3>Conversation</h3>
+            <hr>
+
+            {% for message in room_messages%}
+                <div>
+                    {%if request.user == message.user%}
+                    <a href="{% url 'delete-message' message.id %}">Delete</a>
+                    {%endif%}
+                    <small>@{{message.user}} {{message.created|timesince}}</small>
+                    <p>{{message.body}}</p>
+                </div>
+            {%endfor%}
+        </div>
+
+        {%if request.user.is_authenticated%}
+        <div class="comment-form">
+            <form method="POST" action="">
+                {%csrf_token%}
+                <input type="text" name="body" placeholder="Wrte your message here."/>
+            </form>
+        </div>
+        {%endif%}
+    </div>
+    <div>
+        <h3>Participants</h3>
+        <hr>
+        {%for participant in participants%}
+            <h4>@{{participant.username}}</h4>
+        {%endfor%}
+    </div>
+</div>
 {%endblock content%}
