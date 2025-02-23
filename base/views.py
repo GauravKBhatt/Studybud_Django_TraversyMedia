@@ -6,8 +6,11 @@ from .models import Room,Topic
 from django.db.models import Q
 from django.contrib import messages 
 from django.contrib.auth import authenticate, login,logout
-
+# importing a drecorator to restrict some pages for some users.
+from django.contrib.auth.decorators import login_required
 from .forms import RoomForm
+# importing the inbuilt user signup form from django
+from django.contrib.auth.forms import UserCreationForm
 #using the HttpResponse method.
 # def home(request):
 #     return HttpResponse('Home Page')
@@ -22,7 +25,13 @@ from .forms import RoomForm
 # ]
 
 def loginPage(request):
+    # to identify if the logic is for login or regidter
+    page='login'
+    # if i am logged in already, I should not be allowed to even be on this page.
+    if request.user.is_authenticated:
+        redirect('Home')
     if request.method =='POST':
+        # add .lower() later but now Gaurav and Tim are in uppercase in the DB
         username = request.POST.get('username')
         password = request.POST.get('password')
         try:
@@ -30,12 +39,12 @@ def loginPage(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                return redirect('Home')
             else:
                 messages.error(request, 'The password does not match with the username.')
         except User.DoesNotExist:
             messages.error(request, 'The user does not exist.')
-    context={}
+    context={'page':page}
     return render(request,'base/login_register.html',context)
 
 # figuring out logout
@@ -43,6 +52,22 @@ def logoutPage(request):
     logout(request)
     return redirect('Home')
 
+# register
+def registerPage(request):
+    page='register'
+    form = UserCreationForm()
+    context = {'page':page,'form':form}
+    form=UserCreationForm(request.POST)
+    if form.is_valid():
+        # first we want to clean the data like making sure all the usenrame characters are in lower case, thus, we do not commit immediately.
+        user=form.save(commit=False)
+        user.username=user.username.lower()
+        user.save()
+        login(request,user)
+        return redirect('Home')
+    else:
+        messages.error(request,"Some error occured during the registration process.")
+    return render(request,'base/login_register.html',context)
 # using the render method.
 def home(request):
     if request.GET.get('q')!=None:
@@ -71,6 +96,8 @@ def room(request,pk):
     # returning the room that matches with the parameter pk
     return render(request,'base/room.html',context)
 
+# redirecting a user to the login page to create a room if the user is not logged in properly
+@login_required(login_url='loginPage')
 def createRoom(request):
     form = RoomForm()
     if request.method=='POST':
@@ -82,11 +109,14 @@ def createRoom(request):
     context ={'form':form}
     return render(request,'base/room_form.html',context)
 
+@login_required(login_url='loginPage')
 def updateRoom(request,pk):
     room = Room.objects.get(id=pk)
     # makes sure the update form is prefilled with the information.
     form = RoomForm(instance=room)
-    
+    # to make sure only the host of the room can edit the room. 
+    if request.user != room.host:
+        return HttpResponse("You are not the host of this room.Thus, you cannot edit it.")
     if request.method == 'POST':
         form = RoomForm(request.POST, instance=room)
         if form.is_valid():
@@ -96,6 +126,7 @@ def updateRoom(request,pk):
     return render(request, 'base/room_form.html',context)
 
 # logic to delete the room 
+@login_required(login_url='loginPage')
 def deleteRoom(request,pk):
     room=Room.objects.get(id=pk)
     if request.method=='POST':

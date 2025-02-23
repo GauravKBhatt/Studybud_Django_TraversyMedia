@@ -5,6 +5,7 @@
     <input type="text" name="q" placeholder="Search Rooms."/> 
 </form>
 {%if request.user.is_authenticated%}
+<h4>Hello {{request.user}}</h4>
 <a href="{%url 'logoutPage'%}">Logout</a>
 {%else%}
 <a href="{%url 'loginPage'%}">Login</a>

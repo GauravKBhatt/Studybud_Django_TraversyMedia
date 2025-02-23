@@ -31,8 +31,11 @@
     <a href="{% url 'create-room'%}">Create Room</a>
     {% for room in rooms %}
     <div>
+      <!-- only show the option of editing or deleting a room to the host of the room  -->
+      {% if request.user == room.host %}
       <a href="{%url 'update-room' room.id%}">Edit</a>
       <a href="{%url 'delete-room' room.id%}">Delete</a>
+      {%endif%}
       <!-- variables of django templating engine and making the room names clickable links that will route us to the different rooms. -->
       <!-- <h4>{{room.id}}====<a href="/room/{{room.id}}">{{room.name}}</a></h4> -->
       

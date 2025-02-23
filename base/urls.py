@@ -5,6 +5,7 @@ urlpatterns = [
     # path for the login page
     path('logout/',views.logoutPage,name="logoutPage"),
     path('login/',views.loginPage,name="loginPage"),
+    path('register/',views.registerPage,name='registerPage'),
     # this is to make sure that the website first lands on the home page.
     path('',views.home,name="Home"),
     # this is to make sure the home link from navbar routes to the home page
