@@ -80,8 +80,9 @@ def home(request):
     # topic is a different model thus, we need to specify the model name too, rest are the attributes of the room model.
     rooms =Room.objects.filter (Q(topic__name__icontains=q) | Q(name__icontains='q') | Q(description__icontains='q'))
     room_count=rooms.count() 
+    room_messages=Message.objects.all()
     # creating a dictiory out of the list room
-    context={'rooms':rooms,'topics':topics,'room_count':room_count}
+    context={'rooms':rooms,'topics':topics,'room_count':room_count,'room_messages':room_messages}
 
     return render(request,'base/home.html',context)
 # passing another pk parameter that was defined in the urls.py for dynamic routing. 
