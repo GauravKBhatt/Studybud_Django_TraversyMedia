@@ -1,0 +1,12 @@
+<h3>Recent Activity</h3>
+    <hr>
+    {%for message in room_messages%}
+      <small><a href="{% url 'user-profile' message.user.id %}">@{{message.user}}</a> {{message.created|timesince}}</small>
+      <small>replied to "{{message.room}}"</small>
+      <!-- We do not need to specify message.body because there is a self function in the class meta that returns first 50 characters of the message body. -->
+      <p>{{message}}</p>
+      {%if request.user == message.user%}
+        <a href="{%url 'delete-message' message.id%}">Delete</a>
+      {%endif%}
+      <hr>
+    {%endfor%}

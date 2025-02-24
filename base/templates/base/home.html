@@ -11,56 +11,17 @@
 </style>
 <div class="home-container">
   <div>
-    <h3>Browse Topics</h3>
-    <hr>
-    <div>
-      <a href="{% url 'Home' %}">All</a>
-    </div>
-    <!-- now looping through all the topics to display them. -->
-    {% for topic in topics %}
-      <div>
-        <!-- ?q= is a query string used to pass data to the backend (e.g., filtering content based on topic.name). -->
-        <a href="{%url 'Home'%}?q={{topic.name}}">{{topic.name}}</a>
-      </div>
-    {% endfor %}
+    {%include 'base/topics_component.html'%}
   </div>
   <div>
     <!-- tags of django templating engine -->
     <!-- To display how many rooms are avialable for particular search  -->
     <h4>{{room_count}} rooms avialable</h4>
     <a href="{% url 'create-room'%}">Create Room</a>
-    {% for room in rooms %}
-    <div>
-      <!-- only show the option of editing or deleting a room to the host of the room  -->
-      {% if request.user == room.host %}
-      <a href="{%url 'update-room' room.id%}">Edit</a>
-      <a href="{%url 'delete-room' room.id%}">Delete</a>
-      {%endif%}
-      <!-- variables of django templating engine and making the room names clickable links that will route us to the different rooms. -->
-      <!-- <h4>{{room.id}}====<a href="/room/{{room.id}}">{{room.name}}</a></h4> -->
-      
-      <!-- Now, we will use dynamic routing unlike the static routing that was done in the comments above. Unless and until the 'Room' name does not change in url.py, we do not need to specify the path -->
-      <small>@{{room.host.username}}</small>
-      <h4>{{room.id}}====<a href="{%url 'Room' room.id%}">{{room.name}}</a></h4>
-      <small>{{room.topic.name}}</small>
-      <hr>
-    </div>
-    <!-- we need to end the for loop while in tags of DTE -->
-    {% endfor %}
+    {%include 'base/feed_component.html'%}
   </div>
   <div>
-    <h3>Recent Activity</h3>
-    <hr>
-    {%for message in room_messages%}
-      <small>@{{message.user}} {{message.created|timesince}}</small>
-      <small>replied to "{{message.room}}"</small>
-      <!-- We do not need to specify message.body because there is a self function in the class meta that returns first 50 characters of the message body. -->
-      <p>{{message}}</p>
-      {%if request.user == message.user%}
-        <a href="{%url 'delete-message' message.id%}">Delete</a>
-      {%endif%}
-      <hr>
-    {%endfor%}
+    {% include 'base/activity_component.html' %}
   </div>
 </div>
 {%endblock content%}

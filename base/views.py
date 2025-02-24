@@ -78,9 +78,10 @@ def home(request):
     # rooms = Room.objects.all() this is commented out because now we will query the room through filter method showing only those rooms as searched by the user.
     topics = Topic.objects.all()
     # topic is a different model thus, we need to specify the model name too, rest are the attributes of the room model.
-    rooms =Room.objects.filter (Q(topic__name__icontains=q) | Q(name__icontains='q') | Q(description__icontains='q'))
+    rooms =Room.objects.filter (Q(topic__name__icontains=q) | Q(name__icontains=q) | Q(description__icontains=q))
     room_count=rooms.count() 
-    room_messages=Message.objects.all()
+    # this makes sure to display only the messages of the room you are in the recent activity feed.
+    room_messages=Message.objects.filter(Q(room__topic__name__icontains=q))
     # creating a dictiory out of the list room
     context={'rooms':rooms,'topics':topics,'room_count':room_count,'room_messages':room_messages}
 
@@ -158,3 +159,11 @@ def deleteMessage(request,pk):
         message.delete()
         return redirect('Home')
     return render(request,'base/delete.html',{'obj':message})
+
+def userProfile(request,pk):
+    user=User.objects.get(id=pk)
+    rooms=user.room_set.all()
+    room_messages=user.message_set.all()
+    topics=Topic.objects.all()
+    context={'user':user,'rooms':rooms,'room_messages':room_messages,'topics':topics}
+    return render(request,'base/profile.html',context)
