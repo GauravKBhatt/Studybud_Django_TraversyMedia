@@ -120,6 +120,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# to make sure the app recognizes all the static files such as styling and images are in the static folder
+STATICFILES_DIRS =[
+    BASE_DIR /'static'
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

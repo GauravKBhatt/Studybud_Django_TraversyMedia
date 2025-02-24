@@ -117,8 +117,11 @@ def createRoom(request):
         # instead of individually isolating the 'name' etc, request.post takes care of all at once.
         form = RoomForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('Home')
+            # to make sure that the host name is dynamically added to the form.
+            room = form.save(commit=False)
+            room.host=request.user
+            room.save()
+            return redirect('Room',room.id)
     context ={'form':form}
     return render(request,'base/room_form.html',context)
 
