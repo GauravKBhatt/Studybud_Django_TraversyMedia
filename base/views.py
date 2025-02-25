@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login,logout
 # importing a drecorator to restrict some pages for some users.
 from django.contrib.auth.decorators import login_required
-from .forms import RoomForm
+from .forms import RoomForm, UserForm
 # importing the inbuilt user signup form from django
 from django.contrib.auth.forms import UserCreationForm
 #using the HttpResponse method.
@@ -76,7 +76,7 @@ def home(request):
         q=''
     # We are no more using the data specified in this file. We now use the data in the database through queries.
     # rooms = Room.objects.all() this is commented out because now we will query the room through filter method showing only those rooms as searched by the user.
-    topics = Topic.objects.all()
+    topics = Topic.objects.all()[0:5]
     # topic is a different model thus, we need to specify the model name too, rest are the attributes of the room model.
     rooms =Room.objects.filter (Q(topic__name__icontains=q) | Q(name__icontains=q) | Q(description__icontains=q))
     room_count=rooms.count() 
@@ -188,3 +188,24 @@ def userProfile(request,pk):
     topics=Topic.objects.all()
     context={'user':user,'rooms':rooms,'room_messages':room_messages,'topics':topics}
     return render(request,'base/profile.html',context)
+
+@login_required(login_url='login')
+def updateUser(request):
+    user=request.user
+    form = UserForm(instance=user)
+
+    if request.method =='POST':
+        form = UserForm(request.POST,instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user-profile',pk=user.id)
+    return render(request,'base/update-user.html',{'form':form})
+
+def topicsPage(request):
+    if request.GET.get('q')!=None:
+        q=request.GET.get('q')
+    else:
+        q=''
+    topics= Topic.objects.filter(name__icontains=q)
+    return render(request,'base/topics.html',{'topics':topics})
+
