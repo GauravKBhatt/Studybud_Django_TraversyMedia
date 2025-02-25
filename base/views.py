@@ -113,16 +113,28 @@ def room(request,pk):
 @login_required(login_url='loginPage')
 def createRoom(request):
     form = RoomForm()
+    topics = Topic.objects.all()
     if request.method=='POST':
         # instead of individually isolating the 'name' etc, request.post takes care of all at once.
-        form = RoomForm(request.POST)
-        if form.is_valid():
-            # to make sure that the host name is dynamically added to the form.
-            room = form.save(commit=False)
-            room.host=request.user
-            room.save()
-            return redirect('Room',room.id)
-    context ={'form':form}
+        # for the create room form.
+        topic_name = request.POST.get('topic')
+        # if the get does not get the object with certain name then the created will be 1 otherwise 0.
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        # new way of creating the object. The old way is commented below.
+        Room.objects.create(
+            host=request.user,
+            topic=topic,
+            name=request.POST.get('name'),
+            description=request.POST.get('description'),
+        )
+        # form = RoomForm(request.POST)
+        # if form.is_valid():
+        #     # to make sure that the host name is dynamically added to the form.
+        #     room = form.save(commit=False)
+        #     room.host=request.user
+        #     room.save()
+        return redirect('Home')
+    context ={'form':form,'topics':topics}
     return render(request,'base/room_form.html',context)
 
 @login_required(login_url='loginPage')
@@ -130,15 +142,21 @@ def updateRoom(request,pk):
     room = Room.objects.get(id=pk)
     # makes sure the update form is prefilled with the information.
     form = RoomForm(instance=room)
+    topics = Topic.objects.all()
     # to make sure only the host of the room can edit the room. 
     if request.user != room.host:
         return HttpResponse("You are not the host of this room.Thus, you cannot edit it.")
     if request.method == 'POST':
-        form = RoomForm(request.POST, instance=room)
-        if form.is_valid():
-            form.save()
-            return redirect('Home')
-    context={'form':form}
+        topic_name = request.POST.get('topic')
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        room.name = request.POST.get('name')
+        # we will get that newly created or existing.
+        room.topic = topic
+        room.description = request.POST.get('description')
+        room.save()
+
+        return redirect('Home')
+    context={'form':form,'topics':topics,'room':room}
     return render(request, 'base/room_form.html',context)
 
 # logic to delete the room 

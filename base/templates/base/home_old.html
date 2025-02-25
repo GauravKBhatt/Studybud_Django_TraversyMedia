@@ -1,0 +1,27 @@
+<!-- inheriting the main template -->
+{%extends 'main.html'%}
+
+<!-- putting the main content inside the block -->
+{%block content%}
+<style>
+  .home-container{
+    display:grid;
+    grid-template-columns: 1fr 3fr 1fr;
+  }
+</style>
+<div class="home-container">
+  <div>
+    {%include 'base/topics_component.html'%}
+  </div>
+  <div>
+    <!-- tags of django templating engine -->
+    <!-- To display how many rooms are avialable for particular search  -->
+    <h4>{{room_count}} rooms avialable</h4>
+    <a href="{% url 'create-room'%}">Create Room</a>
+    {%include 'base/feed_component.html'%}
+  </div>
+  <div>
+    {% include 'base/activity_component.html' %}
+  </div>
+</div>
+{%endblock content%}
