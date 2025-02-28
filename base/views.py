@@ -2,15 +2,15 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 # this helps us add AND OR to the queries
-from .models import Room,Topic,Message
+from .models import Room,Topic,Message,User
 from django.db.models import Q
 from django.contrib import messages 
 from django.contrib.auth import authenticate, login,logout
 # importing a drecorator to restrict some pages for some users.
 from django.contrib.auth.decorators import login_required
-from .forms import RoomForm, UserForm
+from .forms import RoomForm, UserForm, MyUSerCreationForm
 # importing the inbuilt user signup form from django
-from django.contrib.auth.forms import UserCreationForm
+# from django.contrib.auth.forms import UserCreationForm
 #using the HttpResponse method.
 # def home(request):
 #     return HttpResponse('Home Page')
@@ -32,16 +32,16 @@ def loginPage(request):
         redirect('Home')
     if request.method =='POST':
         # add .lower() later but now Gaurav and Tim are in uppercase in the DB
-        username = request.POST.get('username')
+        email = request.POST.get('email').lower()
         password = request.POST.get('password')
         try:
-            user = User.objects.get(username=username)
-            user = authenticate(request, username=username, password=password)
+            user = User.objects.get(email=email)
+            user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
                 return redirect('Home')
             else:
-                messages.error(request, 'The password does not match with the username.')
+                messages.error(request, 'The password does not match with the email.')
         except User.DoesNotExist:
             messages.error(request, 'The user does not exist.')
     context={'page':page}
@@ -55,9 +55,9 @@ def logoutPage(request):
 # register
 def registerPage(request):
     page='register'
-    form = UserCreationForm()
+    form = MyUSerCreationForm()
     context = {'page':page,'form':form}
-    form=UserCreationForm(request.POST)
+    form=MyUSerCreationForm(request.POST)
     if form.is_valid():
         # first we want to clean the data like making sure all the usenrame characters are in lower case, thus, we do not commit immediately.
         user=form.save(commit=False)
@@ -195,7 +195,8 @@ def updateUser(request):
     form = UserForm(instance=user)
 
     if request.method =='POST':
-        form = UserForm(request.POST,instance=user)
+        # the request.files contains uploaded files and request.data contains uploaded data
+        form = UserForm(request.POST,request.FILES,instance=user)
         if form.is_valid():
             form.save()
             return redirect('user-profile',pk=user.id)

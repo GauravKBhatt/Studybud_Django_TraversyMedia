@@ -1,7 +1,6 @@
 from django.forms import ModelForm
-from .models import Room
-# to make user edit forms.
-from django.contrib.auth.models import User
+from .models import Room,User
+from django.contrib.auth.forms import UserCreationForm
 
 # creating a model form based on the model room
 class RoomForm(ModelForm):
@@ -14,4 +13,10 @@ class RoomForm(ModelForm):
 class UserForm(ModelForm):
     class Meta:
         model = User
-        fields = ['username','email']
+        fields = ['name','avatar','bio','username','email']
+
+# new user creation form.
+class MyUSerCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['name','username','email','password1','password2']

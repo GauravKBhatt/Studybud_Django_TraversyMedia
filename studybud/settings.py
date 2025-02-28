@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders'
 ]
+# making the abstract user that we imported the base user.
+AUTH_USER_MODEL ='base.User'
 
 MIDDLEWARE = [
     # Cross-Origin Resource Sharing (CORS)
@@ -125,12 +127,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+MEDIA_URL = '/images/'
 
 # to make sure the app recognizes all the static files such as styling and images are in the static folder
 STATICFILES_DIRS =[
     BASE_DIR /'static'
 ]
+# where to upload the media files
+MEDIA_ROOT = BASE_DIR/'static/images'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
