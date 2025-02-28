@@ -38,10 +38,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'base.apps.BaseConfig'
+    # for making the base app
+    'base',
+
+    # for inducting the django rest framework
+    'rest_framework',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    # Cross-Origin Resource Sharing (CORS)
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -129,3 +136,6 @@ STATICFILES_DIRS =[
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# allowing the api calls from all the frontends
+CORS_ALLOW_ALL_ORIGINS = True
