@@ -19,10 +19,14 @@ class ChatView(LoginRequiredMixin,View):
     def get(self,request):
         return render(request,'rtchat/chat.html',self.context,)
     
+    # CENTRAL method in django that decides which HTTP method to call. We can override it to call custom methods like def htmx()
     def dispatch(self, request, *args, **kwargs):
+        # every HTMX sends a special header HX-Request: true on every HTMX request. 
         if request.method.lower() == 'post' and request.headers.get('HX-Request'):
+
             return self.htmx(request, *args, **kwargs)
         return super().dispatch(request, *args, **kwargs)
+    # if the request is not a HTMX method it calls the default dispatch method. 
 
     def htmx(self,request):
         form = ChatmessageCreateForm(request.POST)
