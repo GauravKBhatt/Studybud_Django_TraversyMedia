@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 
     # for making the base app
     'base',
+    'rtchat',
+    'django_htmx',
 
     # for inducting the django rest framework
     'rest_framework',

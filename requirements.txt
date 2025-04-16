@@ -1,0 +1,6 @@
+django
+pillow
+django-cleanup
+django-restframework
+django-allauth
+django-htmx

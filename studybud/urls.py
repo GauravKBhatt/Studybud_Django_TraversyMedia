@@ -12,7 +12,8 @@ urlpatterns = [
     # to make sure all the requests are passed to the urls.py file of base app
     path('',include('base.urls')),
     # now to make sure all the requests with api in the uri goto the url file of api subfolder of base app.
-    path('api/',include('base.api.urls'))
+    path('api/',include('base.api.urls')),
+    path('realtime/',include('rtchat.urls'))
 ]
 
 # path comes from the media_url specified in the settings.py and file path comes from the media_root specified there.
