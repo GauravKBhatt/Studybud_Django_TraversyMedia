@@ -4,3 +4,4 @@ django-cleanup
 django-restframework
 django-allauth
 django-htmx
+channels

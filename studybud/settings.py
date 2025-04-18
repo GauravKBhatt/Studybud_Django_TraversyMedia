@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,7 +47,8 @@ INSTALLED_APPS = [
 
     # for inducting the django rest framework
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    
 ]
 # making the abstract user that we imported the base user.
 AUTH_USER_MODEL ='base.User'
@@ -81,8 +84,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'studybud.wsgi.application'
-
+# WSGI_APPLICATION = 'studybud.wsgi.application'
+# changing it to asgi application for real time asynchronous messaging
+ASGI_APPLICATION = 'studybud.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -146,3 +150,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # allowing the api calls from all the frontends
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
